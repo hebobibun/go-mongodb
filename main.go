@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -23,6 +24,7 @@ func main() {
 
 	// Routes
 	e.GET("/create-user", createUser)
+	e.GET("/users", getUser)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
@@ -58,4 +60,45 @@ func createUser(c echo.Context) error {
 	fmt.Println(user1)
 
 	return c.String(http.StatusOK, "Inserted a new user successsfully")
+}
+
+func getUser(c echo.Context) error {
+	age := c.QueryParam("age")
+
+	client := config.MgConnect()
+	defer client.Disconnect(context.TODO())
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var users = make([]User, 0)
+
+	coll := config.MgCollection("users", client)
+
+	res, err := coll.Find(
+		ctx,
+		bson.M{
+			"age": age,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	defer res.Close(ctx)
+
+	fmt.Println(res)
+	for res.Next(ctx) {
+		fmt.Println(1)
+		var user User
+		err = res.Decode(&user)
+		if err != nil {
+			return err
+		}
+		fmt.Println("user :", user)
+
+		users = append(users, user)
+	}
+
+	return c.JSON(http.StatusOK, users)
 }
