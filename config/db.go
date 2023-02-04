@@ -10,10 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func MgConnect() *mongo.Client {
+func MgConnect(ac AppConfig) *mongo.Client {
 	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
+	uri := fmt.Sprintf("mongodb+srv://%s:%s@bob.ynw24pz.mongodb.net/?retryWrites=true&w=majority", ac.DBUser, ac.DBPass)
 	clientOptions := options.Client().
-		ApplyURI("mongodb+srv://bob:123@bob.ynw24pz.mongodb.net/?retryWrites=true&w=majority").
+		ApplyURI(uri).
 		SetServerAPIOptions(serverAPIOptions)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

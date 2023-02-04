@@ -38,13 +38,14 @@ type User struct {
 }
 
 func createUser(c echo.Context) error {
-	clt := config.MgConnect()
-	defer clt.Disconnect(context.TODO())
+	cfg := config.InitConfig()
+	client := config.MgConnect(*cfg)
+	defer client.Disconnect(context.TODO())
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	var table = config.MgCollection("users", clt)
+	var table = config.MgCollection("users", client)
 
 	user1 := User{
 		Name:      "Pevita P",
@@ -65,7 +66,8 @@ func createUser(c echo.Context) error {
 func getUser(c echo.Context) error {
 	age := c.QueryParam("age")
 
-	client := config.MgConnect()
+	cfg := config.InitConfig()
+	client := config.MgConnect(*cfg)
 	defer client.Disconnect(context.TODO())
 
 	ctx, cancel := context.WithCancel(context.Background())
