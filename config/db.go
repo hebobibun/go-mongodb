@@ -12,7 +12,7 @@ import (
 
 func MgConnect(ac AppConfig) *mongo.Client {
 	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
-	uri := fmt.Sprintf("mongodb+srv://%s:%s@bob.ynw24pz.mongodb.net/?retryWrites=true&w=majority", ac.DBUser, ac.DBPass)
+	uri := fmt.Sprintf("mongodb+srv://%s:%s@%s", ac.DBUser, ac.DBPass, ac.DBHost)
 	clientOptions := options.Client().
 		ApplyURI(uri).
 		SetServerAPIOptions(serverAPIOptions)

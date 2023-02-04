@@ -9,6 +9,7 @@ import (
 type AppConfig struct {
 	DBUser string
 	DBPass string
+	DBHost string
 }
 
 func InitConfig() *AppConfig {
